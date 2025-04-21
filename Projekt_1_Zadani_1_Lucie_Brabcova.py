@@ -1,18 +1,45 @@
+import mysql.connector
+
+def pripojeni():
+    return mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password= "1234",
+        database="ukoly")
+
+def tvorba_tabulky():
+    conn=pripojeni()
+    kurzor=conn.kurzor()
+
+    kurzor.execute("""
+CREATE TABLE ukoly.ukoly (
+	id INT auto_increment NOT NULL PRIMARY KEY,
+	nazev varchar(100) NOT NULL,
+	popis_ukolu TEXT NULL,
+	stav ENUM ('Nezahájeno', 'Hotovo', 'Probíhá') DEFAULT 'Nezahájeno' NOT NULL,
+	datum_vytvoreni DATETIME DEFAULT now() NULL
+)
+    """)
+
 ukoly = {}
 
-def hlavni_menu():
+def hlavni_menu ():
     print("Správce úkolů - Hlavní menu")
     print("1 - Přidat nový úkol")
     print("2 - Zobrazit všechny úkoly")
-    print("3 - Odstranit úkol")
-    print("4 - Konec programu")
+    print("3 - Aktualizovat úkol")
+    print("4 - Odstranit úkol")
+    print("5 - Konec programu")
     ciselne_moznosti = input("Vyberte možnost (1 - 4):")
     ciselne_moznosti = int(ciselne_moznosti)
     while True:
-        if ciselne_moznosti == 4:
+        if ciselne_moznosti == 5:
             exit()
-        elif ciselne_moznosti == 3:
+        elif ciselne_moznosti == 4:
             odstranit_ukol()
+            hlavni_menu()
+        elif ciselne_moznosti == 3:
+            aktualizovat_ukol()
             hlavni_menu()
         elif ciselne_moznosti == 2:
             zobrazit_ukoly()
@@ -35,25 +62,63 @@ def pridat_ukol():
             print("Prosím vyplňte popis úkolu.")
         pridat_ukol()
     else:
-        ukoly[nazev_ukolu] = popis_ukolu
+        conn=pripojeni()
+        kurzor=conn.cursor()
+        kurzor.execute("""
+INSERT INTO ukoly.ukoly
+(nazev, popis_ukolu)
+VALUES('"""+ nazev_ukolu+"""', '"""+ popis_ukolu+"""')""")
+        kurzor.close() 
+        conn.commit()
         print("Úkol " + nazev_ukolu + " byl přidán.")
 
 def zobrazit_ukoly():
-    #print(ukoly)
+    conn=pripojeni()
+    kurzor=conn.cursor()
     print("Seznam úkolů:")
-    for klic in ukoly.keys():
-        print(klic + " - " + ukoly[klic] + "\n") 
+    kurzor.execute("SELECT id, nazev, popis_ukolu, stav FROM ukoly WHERE stav IN ('Nezahájeno', 'Probíhá')")
+
+    myresult = kurzor.fetchall()
+
+    for x in myresult:
+        print(x)
     
 def odstranit_ukol():
     zobrazit_ukoly()
-    co_smazat = input("Jaký úkol chceš smazat?")
-    if ukoly.get(co_smazat, 0) != 0:
-        del ukoly[co_smazat]
+    co_smazat = input("Zadej ID úkolu, který chceš smazat: ")
+    if True:
+        conn=pripojeni()
+        kurzor=conn.cursor()
+        kurzor.execute("""
+DELETE FROM ukoly.ukoly
+WHERE id="""+ co_smazat)
+        kurzor.close() 
+        conn.commit()
         print("Úkol byle úspěšně smazán.")
     else:
         print("Tento úkol neexistuje!")
 
-
+def aktualizovat_ukol():
+    zobrazit_ukoly()
+    co_aktualizovat = input("Zadej ID úkolu, který chceš aktualizovat: ")
+    akce = input("Zadej 1 pro Probíhá nebo zadej 2 pro Hotovo: ")
+    if akce==1:
+        conn=pripojeni()
+        kurzor=conn.cursor()
+        kurzor.execute("""
+UPDATE ukoly.ukoly SET stav='Probíhá' WHERE id="""+ co_aktualizovat)
+        kurzor.close() 
+        conn.commit()
+        print("Úkol byle úspěšně aktualizován.")
+    else:
+        conn=pripojeni()
+        kurzor=conn.cursor()
+        kurzor.execute("""
+UPDATE ukoly.ukoly SET stav='Hotovo' WHERE id="""+ co_aktualizovat)
+        kurzor.close() 
+        conn.commit()
+        print("Úkol byle úspěšně aktualizován.")
+        
 hlavni_menu()
     
 
