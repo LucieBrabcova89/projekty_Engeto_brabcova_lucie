@@ -52,9 +52,11 @@ def hlavni_menu ():
             ciselne_moznosti=input("Vyberte možnost (1 - 4):")
             ciselne_moznosti = int(ciselne_moznosti)
 
-def pridat_ukol():
-    nazev_ukolu = input("Název úkolu:")
-    popis_ukolu = input("Popis úkolu:")
+def pridat_ukol(nazev_ukolu = None, popis_ukolu = None):
+    if nazev_ukolu == None:
+        nazev_ukolu = input("Název úkolu:")
+    if popis_ukolu == None:
+        popis_ukolu = input("Popis úkolu:")
     if nazev_ukolu == "" or popis_ukolu == "":
         if nazev_ukolu == "":
             print("Prosím vyplňte název úkolu.")
@@ -83,10 +85,11 @@ def zobrazit_ukoly():
     for x in myresult:
         print(x)
     
-def odstranit_ukol():
+def odstranit_ukol(co_smazat = None):
     zobrazit_ukoly()
-    co_smazat = input("Zadej ID úkolu, který chceš smazat: ")
-    if True:
+    if co_smazat == None:
+        co_smazat = input("Zadej ID úkolu, který chceš smazat: ")
+    if co_smazat.isnumeric():
         conn=pripojeni()
         kurzor=conn.cursor()
         kurzor.execute("""
@@ -94,14 +97,16 @@ DELETE FROM ukoly.ukoly
 WHERE id="""+ co_smazat)
         kurzor.close() 
         conn.commit()
-        print("Úkol byle úspěšně smazán.")
+        print("Úkol byl úspěšně smazán.")
     else:
         print("Tento úkol neexistuje!")
 
-def aktualizovat_ukol():
+def aktualizovat_ukol(co_aktualizovat = None, akce = None):
     zobrazit_ukoly()
-    co_aktualizovat = input("Zadej ID úkolu, který chceš aktualizovat: ")
-    akce = input("Zadej 1 pro Probíhá nebo zadej 2 pro Hotovo: ")
+    if co_aktualizovat == None:
+        co_aktualizovat = input("Zadej ID úkolu, který chceš aktualizovat: ")
+    if akce == None:
+        akce = input("Zadej 1 pro Probíhá nebo zadej 2 pro Hotovo: ")
     if akce==1:
         conn=pripojeni()
         kurzor=conn.cursor()
@@ -109,8 +114,8 @@ def aktualizovat_ukol():
 UPDATE ukoly.ukoly SET stav='Probíhá' WHERE id="""+ co_aktualizovat)
         kurzor.close() 
         conn.commit()
-        print("Úkol byle úspěšně aktualizován.")
-    else:
+        print("Úkol byl úspěšně aktualizován.")
+    elif akce == 2:
         conn=pripojeni()
         kurzor=conn.cursor()
         kurzor.execute("""
@@ -118,7 +123,9 @@ UPDATE ukoly.ukoly SET stav='Hotovo' WHERE id="""+ co_aktualizovat)
         kurzor.close() 
         conn.commit()
         print("Úkol byle úspěšně aktualizován.")
+    else:
+        print("Chybná akce.")
         
-hlavni_menu()
+#hlavni_menu()
     
 
