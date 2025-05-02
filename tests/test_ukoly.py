@@ -1,4 +1,4 @@
-from src.Projekt_1_Zadani_1_Lucie_Brabcova import pridat_ukol, aktualizovat_ukol, odstranit_ukol
+from src.Projekt_2_Lucie_Brabcova import pridat_ukol, aktualizovat_ukol, odstranit_ukol
 
 def test_pridat_pozitivni():
     pridat_ukol("Přidávám úkol.", "Nový úkol.")
