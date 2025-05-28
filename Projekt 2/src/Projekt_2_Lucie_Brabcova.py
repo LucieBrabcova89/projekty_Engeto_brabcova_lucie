@@ -23,29 +23,33 @@ CREATE TABLE IF NOT EXISTS ukoly.ukoly (
     conn.close()
     return True
 
+def hlavni_menu():
+    while True:
+        print("Správce úkolů - Hlavní menu")
+        print("1 - Přidat nový úkol")
+        print("2 - Zobrazit všechny úkoly")
+        print("3 - Aktualizovat úkol")
+        print("4 - Odstranit úkol")
+        print("5 - Konec programu")
+        ciselne_moznosti = input("Vyberte možnost (1 - 5):")
+        while (not ciselne_moznosti.isnumeric()):
+            print("Zadej číslo!")
+            ciselne_moznosti = input("Vyberte možnost (1 - 5x):")
+        ciselne_moznosti = int(ciselne_moznosti)
+        if ciselne_moznosti == 5:
+            exit()
+        elif ciselne_moznosti == 4:
+            odstranit_ukol_input()
+        elif ciselne_moznosti == 3:
+            aktualizovat_ukol_input()
+        elif ciselne_moznosti == 2:
+            zobrazit_ukoly()
+        elif ciselne_moznosti == 1:
+            pridat_ukol_input()
+        else:
+            print("Neplatná hodnota! Opakujte volbu.")
+        return True
 
-def hlavni_menu ():
-    print("Správce úkolů - Hlavní menu")
-    print("1 - Přidat nový úkol")
-    print("2 - Zobrazit všechny úkoly")
-    print("3 - Aktualizovat úkol")
-    print("4 - Odstranit úkol")
-    print("5 - Konec programu")
-    ciselne_moznosti = input("Vyberte možnost (1 - 4):")
-    ciselne_moznosti = int(ciselne_moznosti)
-    if ciselne_moznosti == 5:
-        exit()
-    elif ciselne_moznosti == 4:
-        odstranit_ukol_input()
-    elif ciselne_moznosti == 3:
-        aktualizovat_ukol_input()
-    elif ciselne_moznosti == 2:
-        zobrazit_ukoly()
-    elif ciselne_moznosti == 1:
-        pridat_ukol_input()
-    else:
-        print("Neplatná hodnota! Opakujte volbu.")
-    return True
 def pridat_ukol_input():
     nazev_ukolu = input("Název úkolu:")
     popis_ukolu = input("Popis úkolu:")
@@ -81,7 +85,7 @@ def zobrazit_ukoly():
     for x in myresult:
         print(x)
     conn.close()
-    return True
+    return myresult
 def odstranit_ukol_input():
     co_smazat = input("Zadej ID úkolu, který chceš smazat: ")
     odstranit_ukol(co_smazat)
@@ -130,9 +134,10 @@ UPDATE ukoly.ukoly SET stav='Hotovo' WHERE id="""+ co_aktualizovat)
     else:
         return "Chybná akce."
 
-tvorba_tabulky()
+if __name__ == "__main__":
+    tvorba_tabulky()
 # Oddělená TEST DB je označeno jako volitelné
-while True:    
-    hlavni_menu()
+    while True:    
+        hlavni_menu()
     
 
